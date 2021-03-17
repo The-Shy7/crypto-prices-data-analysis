@@ -31,7 +31,7 @@ col2, col3 = st.beta_columns((2,1))
 # sidebar + main panel
 col1.header('Input Options')
 
-# currency selector
+# currency selector (sidebar)
 currency_price_unit = col1.selectbox('Select currency for price', ('USD', 'BTC', 'ETH'))
 
 # Web scraping of CoinMarketCap data
@@ -79,3 +79,19 @@ def load_data():
     return df
 
 df = load_data()
+
+# cryptocurrency selections (sidebar)
+sorted_coin = sorted(df['coin_symbol'])
+selected_coin = col1.multiselect('Cryptocurrency', sorted_coin, sorted_coin)
+df_selected_coin = df[(df['coin_symbol'].isin(selected_coin))] # filter data
+
+# number of coins to display (sidebar)
+num_coin = col1.slider('Display Top N Coins', 1, 100, 100)
+df_coins = df_selected_coin[:num_coin]
+
+
+# percent change timeframe (sidebar)
+percent_timeframe = col1.selectbox('Percent change time frame',
+                                    ['7d','24h', '1h'])
+percent_dict = {"7d":'percent_change_7d',"24h":'percent_change_24h',"1h":'percent_change_1h'}
+selected_percent_timeframe = percent_dict[percent_timeframe]
