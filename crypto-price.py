@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from bs4 import BeautifulSoup
 import requests
 import json
+import time
 
 # page layout
 # page expands to full width
@@ -89,9 +90,22 @@ df_selected_coin = df[(df['coin_symbol'].isin(selected_coin))] # filter data
 num_coin = col1.slider('Display Top N Coins', 1, 100, 100)
 df_coins = df_selected_coin[:num_coin]
 
-
 # percent change timeframe (sidebar)
 percent_timeframe = col1.selectbox('Percent change time frame',
                                     ['7d','24h', '1h'])
 percent_dict = {"7d":'percent_change_7d',"24h":'percent_change_24h',"1h":'percent_change_1h'}
 selected_percent_timeframe = percent_dict[percent_timeframe]
+
+## sorting values (sidebar)
+sort_values = col1.selectbox('Sort values?', ['Yes', 'No'])
+col2.subheader('Price Data of Selected Cryptocurrency')
+col2.write('Data Dimension: ' + str(df_selected_coin.shape[0]) + ' rows and ' + str(df_selected_coin.shape[1]) + ' columns.')
+
+# download CSV data
+def filedownload(df):
+    csv = df.to_csv(index=False)
+    b64 = base64.b64encode(csv.encode()).decode()  # strings <-> bytes conversions
+    href = f'<a href="data:file/csv;base64,{b64}" download="crypto.csv">Download CSV File</a>'
+    return href
+
+col2.markdown(filedownload(df_selected_coin), unsafe_allow_html=True)
