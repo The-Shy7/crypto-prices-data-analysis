@@ -13,13 +13,13 @@ st.set_page_config(layout="wide")
 # title
 st.title('Crypto Prices')
 st.markdown(""" 
-    This app retrieves cryptocurrency prices for the top 100 cryptocurrencies from **CoinMarketCap**
+    This app retrieves prices for the top 100 cryptocurrencies from **CoinMarketCap**
 """)
 
 # about 
 expander_bar = st.beta_expander("About")
 expander_bar.markdown("""
-* **Python libraries:** 
+* **Python libraries:** base64, pandas, streamlit, matplotlib, BeautifulSoup, requests, json, time 
 * **Data source:** [CoinMarketCap](http://coinmarketcap.com)
 * **Credit:** Web scraper adapted from the Medium article *[Web Scraping Crypto Prices With Python](https://towardsdatascience.com/web-scraping-crypto-prices-with-python-41072ea5b5bf)* written by Bryan Feng
 """)
@@ -118,3 +118,31 @@ df_change['positive_percent_change_1h'] = df_change['percent_change_1h'] > 0
 df_change['positive_percent_change_24h'] = df_change['percent_change_24h'] > 0
 df_change['positive_percent_change_7d'] = df_change['percent_change_7d'] > 0
 col2.dataframe(df_change)
+
+# conditional creation of bar plot (time frame)
+col3.subheader('Bar plot of % Price Change')
+
+if percent_timeframe == '7d':
+    if sort_values == 'Yes':
+        df_change = df_change.sort_values(by=['percent_change_7d'])
+    col3.write('*7 days period*')
+    plt.figure(figsize=(5,25))
+    plt.subplots_adjust(top = 1, bottom = 0)
+    df_change['percent_change_7d'].plot(kind='barh', color=df_change.positive_percent_change_7d.map({True: 'g', False: 'r'}))
+    col3.pyplot(plt)
+elif percent_timeframe == '24h':
+    if sort_values == 'Yes':
+        df_change = df_change.sort_values(by=['percent_change_24h'])
+    col3.write('*24 hour period*')
+    plt.figure(figsize=(5,25))
+    plt.subplots_adjust(top = 1, bottom = 0)
+    df_change['percent_change_24h'].plot(kind='barh', color=df_change.positive_percent_change_24h.map({True: 'g', False: 'r'}))
+    col3.pyplot(plt)
+else:
+    if sort_values == 'Yes':
+        df_change = df_change.sort_values(by=['percent_change_1h'])
+    col3.write('*1 hour period*')
+    plt.figure(figsize=(5,25))
+    plt.subplots_adjust(top = 1, bottom = 0)
+    df_change['percent_change_1h'].plot(kind='barh', color=df_change.positive_percent_change_1h.map({True: 'g', False: 'r'}))
+    col3.pyplot(plt)
